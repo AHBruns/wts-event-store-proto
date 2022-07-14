@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+service EventStoreService {
+  rpc takeAt (TakeAtRequest) returns (TakeAtResponse) {}
+  rpc append (AppendRequest) returns(AppendResponse) {}
+}
+
+message TakeAtRequest {
+  string streamId = 1;
+  uint32 count = 2;
+}
+
+message TakeAtResponse {
+  repeated StreamEvent streamEvents = 1;
+}
+
+message AppendRequest {
+  repeated Event events = 1;
+}
+
+message AppendResponse {
+  repeated string streamIds = 1;
+}
+
+// implementation types
+
+enum SystemService {
+  PING = 0;
+  PONG = 1;
+}
+
+message SystemServiceLamportTimestamp {
+  SystemService service = 1;
+  uint32 index = 2;
+}
+
+message Event {
+  repeated SystemServiceLamportTimestamp systemVectorTimestamp = 2;
+  SystemServiceLamportTimestamp publisherTimestamp = 4;
+  bytes implementation = 5;
+}
+
+message StreamEvent {
+  string streamId = 1;
+  Event event = 2; 
+}
+
+
+
